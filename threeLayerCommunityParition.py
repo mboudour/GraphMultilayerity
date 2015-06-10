@@ -26,8 +26,7 @@ def analyticThreeLayerGraph(n,p,r1,r2,r3,G_isolates=True):
     layer2 = random.sample(set(G.nodes())-set(layer1),int(len(G.nodes())*r2))
     layer3 = list(set(G.nodes())-set(layer1)-set(layer2))
 
-    edgeList =[]#{'layer12':[],'layer23':[],'layer31':[]}
-
+    edgeList =[]
 
     for e in G.edges():
         if (e[0] in layer1 and e[1] in layer2) or (e[0] in layer2 and e[1] in layer1):
@@ -75,11 +74,7 @@ def create_node_comm_graph(G,layer1,layer2,layer3):
             cl[name[1]]=colors.pop()
     for i,v in rbroken_partition.items():
         name=v.split('_')
-        # try:
         broken_graph.add_node(v,color=cl[name[1]])
-        # except Error,e:
-        #     print e
-        #     broken_graph.add_node(v,color=color.pop())
         edg=G[i]
         for j in edg:
             if j not in broken_partition[v]:
@@ -94,7 +89,6 @@ def plot_graph_stack(G,broken_graph,broken_partition,npartition,layer1,layer2,la
         pos=nx.spring_layout(G)
     else:
         pos=nx.random_layout(G)
-    # pos =nx.circular_layout(G)
 
     top_set=set()
     bottom_set=set()
@@ -102,6 +96,8 @@ def plot_graph_stack(G,broken_graph,broken_partition,npartition,layer1,layer2,la
     down=[]
     right=[]
     left=[]
+    mlayer_part={}
+    for i in broken_partition:
 
     mlayer_part={}
     for i in broken_partition:
@@ -110,6 +106,7 @@ def plot_graph_stack(G,broken_graph,broken_partition,npartition,layer1,layer2,la
             mlayer_part[ii[1]]=set([ii[2]])
         else:
             mlayer_part[ii[1]].add(ii[2])
+
     layers_m=Counter()
     for k,v in mlayer_part.items():
         if len(v)==1:
@@ -199,7 +196,7 @@ def plot_graph_stack(G,broken_graph,broken_partition,npartition,layer1,layer2,la
     lay3_edges=[ed for ed in G.edges() if ed[0] in layer3 and ed[1] in layer3]
     
     nx.draw_networkx_edges(broken_graph,broken_pos,alpha=0.3) #0.15
-    title_s='%i communities (%i 3-layered, 2-layered, %i 1-layered)' %(len(npartition),len(npartition)-singles,singles)
+    title_s='%i communities (%i 3-layered, %i 2-layered, %i 1-layered)' %(len(npartition),layers_m[3],layers_m[2],layers_m[1])  #%(len(npartition),len(npartition)-singles,singles)
     plt.title(title_s,{'size': '20'})
     plt.axis('off')
     plt.show()
@@ -211,8 +208,6 @@ def plot_graph(G,broken_graph,broken_partition,npartition,layer1,layer2,layer3,d
         pos=nx.spring_layout(G)
     else:
         pos=nx.random_layout(G)
-        # pos =nx.circular_layout(G)
-
     mlayer_part={}
     for i in broken_partition:
         ii=i.split('_')
@@ -237,6 +232,25 @@ def plot_graph(G,broken_graph,broken_partition,npartition,layer1,layer2,layer3,d
     down=[]
     right=[]
     left=[]
+    mlayer_part={}
+    for i in broken_partition:
+
+        ii=i.split('_')
+        if ii[1] not in mlayer_part:
+            mlayer_part[ii[1]]=set([ii[2]])
+        else:
+            mlayer_part[ii[1]].add(ii[2])
+
+    layers_m=Counter()
+    for k,v in mlayer_part.items():
+        if len(v)==1:
+            layers_m[1]+=1
+        elif len(v)==2:
+            layers_m[2]+=1
+        elif len(v)==3:
+            layers_m[3]+=1
+        else:
+            print k,v
     broken_pos={}
     singles=0
     for i,v in broken_partition.items():       
