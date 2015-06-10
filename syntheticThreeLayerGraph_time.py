@@ -155,7 +155,7 @@ def plot_graph(n,G,J,FF,DD,JFD,d1=0.8,d2=5.0,nodesize=1000,withlabels=True,edgel
 
     return created_pos
 def synthetic_multi_level(k,n,p=[],No_isolates=True):#,p2=[],p3=[],J_isolates=False,F_isolates=False,D_isolates=False):#,isolate_up=True,isolate_down=True):
-    print k,n,p
+    # print k,n,p
     # k=ng
     list_of_Graphs=[]
     list_of_isolates=[]
@@ -200,35 +200,40 @@ def synthetic_multi_level(k,n,p=[],No_isolates=True):#,p2=[],p3=[],J_isolates=Fa
     
     
     for i in range(k):
-        print i
+        # print i
+        # ngn=nx.Graph()
         mapping={}
         # mapping[i]=
         for ij in range(n):
             mapping[ij]=ij+i*n
-            print i,ij, mapping
-        print i,mapping,'kkk'
-        # for ed in list_of_Graphs[i].edges()
-        print list_of_Graphs[i].nodes()
-        print list_of_Graphs[i].edges()
+        #     print i,ij, mapping
+        # print i,mapping,'kkk'
+        # for ed in list_of_Graphs[i].edges():
+        #     ngn.add_edge(mapping[ed[0]],mapping[ed[1]])
+        # for nd in list_of_Graphs[i].nodes():
+        #     ngn.add_node(mapping[nd])
+        # print list_of_Graphs[i].nodes()
+        # print list_of_Graphs[i].edges()
         list_of_Graphs_final.append(nx.relabel_nodes(list_of_Graphs[i],mapping,copy=True))
-        print list_of_Graphs_final[i].nodes()
-        print list_of_Graphs_final[i].edges()
-        print 'kkkkkkkkkkkkkk'
+    #     list_of_Graphs_final.append(ngn)
+    #     print list_of_Graphs_final[i].nodes()
+    #     print list_of_Graphs_final[i].edges()
+    #     print 'kkkkkkkkkkkkkk'
     # print aaaa
     # print mapping
     # for kk in list_of_Graphs_final:
     #     print kk.nodes()
     # print aaaaaa
     # list_of_Graphs_final=[nx.relabel_nodes(i,mapping,copy=True) for i in list_of_Graphs]
-    for i in range(k):
-        print list_of_Graphs_final[i].nodes()
+    # for i in range(k):
+    #     print list_of_Graphs_final[i].nodes()
     list_of_translation_graphs=[]
     for ij in range(k-1):
         H1=nx.Graph()
         # H2=nx.Graph()
         for ji in range(n):
-            print ij,ji,ij+1
-            print list_of_Graphs_final[ij].nodes()[ji],list_of_Graphs_final[ij+1].nodes()[ji]
+            # print ij,ji,ij+1
+            # print list_of_Graphs_final[ij].nodes()[ji],list_of_Graphs_final[ij+1].nodes()[ji]
             # print ij,ji
             # print [list_of_Graphs_final[ij].nodes(),list_of_Graphs_final[ij+1].nodes()]
             # print [list_of_Graphs_final[ij].nodes()[ji],list_of_Graphs_final[ij+1].nodes()[ji]]
@@ -293,7 +298,7 @@ def plot_graph_k(k,n,G,list_of_Graphs_final, Gagr,d1=0.8,d2=5.0,nodesize=1000,wi
     Plotting the synthetic graph after increasing the distance among layers by a parameter d1
     and dilating each layer by a parameter d1 
     '''
-    print k,n,'st'
+    # print k,n,'st'
     if layout:
         pos=nx.spring_layout(Gagr)
     else:
@@ -301,7 +306,7 @@ def plot_graph_k(k,n,G,list_of_Graphs_final, Gagr,d1=0.8,d2=5.0,nodesize=1000,wi
         # pos =nx.circular_layout(Gagr)
 
     minPos=min(pos.keys())
-    print pos
+    # print pos
     top_set=set()
     bottom_set=set()
     middle_set=set()
@@ -402,8 +407,8 @@ def plot_graph_k(k,n,G,list_of_Graphs_final, Gagr,d1=0.8,d2=5.0,nodesize=1000,wi
     fig=plt.figure()#figsize=(20,20))
     ax=fig.add_subplot(111)
     for i in range(k):
-        print xylevels[i]
-        print xylevels[i][0][0], type(xylevels[i][0][0])
+        # print xylevels[i]
+        # print xylevels[i][0][0], type(xylevels[i][0][0])
 
         # print aaa
         ax.add_patch(Polygon(xylevels[i],color=levels[i][2],alpha=0.1))
