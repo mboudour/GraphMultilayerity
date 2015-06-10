@@ -453,9 +453,9 @@ def plot_graph_k(k,n,G,list_of_Graphs_final, Gagr,d1=0.8,d2=5.0,nodesize=1000,wi
 # # print nx.isolates(G)
 # # plot_graph(n,G,J,FF,DD,F,d1=2.,d2=3.,nodesize=100,withlabels=False,edgelist=edgeList,layout=True,b_alpha=0.5)
 # plot_graph(n,G,J,FF,DD,JFD,d1=2.,d2=3.,nodesize=50,withlabels=False,edgelist=edgeList,layout=False,b_alpha=0.15)
-k=5
-n=10
-pp=[0.1,.1,.1,.1,.4]
-G, list_of_Graphs_final, Gagr, edgeList=synthetic_multi_level(k,n,p=pp,No_isolates=True)
-plot_graph_k(k,n,G, list_of_Graphs_final, Gagr, edgelist=edgeList)
-            # k,n,G,list_of_Graphs_final, Gagr,d1
+# k=5
+# n=10
+# pp=[0.1,.1,.1,.1,.4]
+# G, list_of_Graphs_final, Gagr, edgeList=synthetic_multi_level(k,n,p=pp,No_isolates=True)
+# plot_graph_k(k,n,G, list_of_Graphs_final, Gagr, edgelist=edgeList)
+#             # k,n,G,list_of_Graphs_final, Gagr,d1

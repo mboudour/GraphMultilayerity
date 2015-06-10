@@ -99,20 +99,14 @@ def plot_graph_stack(G,broken_graph,broken_partition,npartition,layer1,layer2,la
     mlayer_part={}
     for i in broken_partition:
 
-<<<<<<< HEAD
-=======
     mlayer_part={}
     for i in broken_partition:
->>>>>>> upstream/master
         ii=i.split('_')
         if ii[1] not in mlayer_part:
             mlayer_part[ii[1]]=set([ii[2]])
         else:
             mlayer_part[ii[1]].add(ii[2])
-<<<<<<< HEAD
 
-=======
->>>>>>> upstream/master
     layers_m=Counter()
     for k,v in mlayer_part.items():
         if len(v)==1:
@@ -123,10 +117,7 @@ def plot_graph_stack(G,broken_graph,broken_partition,npartition,layer1,layer2,la
             layers_m[3]+=1
         else:
             print k,v
-<<<<<<< HEAD
-=======
 
->>>>>>> upstream/master
     broken_pos={}
     singles=0
     for i,v in broken_partition.items():        
@@ -217,10 +208,6 @@ def plot_graph(G,broken_graph,broken_partition,npartition,layer1,layer2,layer3,d
         pos=nx.spring_layout(G)
     else:
         pos=nx.random_layout(G)
-<<<<<<< HEAD
-=======
-        # pos =nx.circular_layout(G)
-
     mlayer_part={}
     for i in broken_partition:
         ii=i.split('_')
@@ -238,7 +225,6 @@ def plot_graph(G,broken_graph,broken_partition,npartition,layer1,layer2,layer3,d
             layers_m[3]+=1
         else:
             print k,v
->>>>>>> upstream/master
 
     top_set=set()
     bottom_set=set()
@@ -343,11 +329,7 @@ def plot_graph(G,broken_graph,broken_partition,npartition,layer1,layer2,layer3,d
     lay3_edges=[ed for ed in G.edges() if ed[0] in layer3 and ed[1] in layer3]
     
     nx.draw_networkx_edges(broken_graph,broken_pos,alpha=0.3) #0.15
-<<<<<<< HEAD
-    title_s='%i communities (%i 3-layered, %i 2-layered, %i 1-layered)' %(len(npartition),layers_m[3],layers_m[2],layers_m[1])  #%(len(npartition),len(npartition)-singles,singles)
-=======
     title_s='%i communities (%i 3-layered, %i 2-layered, %i 1-layered)' %(len(npartition),layers_m[3],layers_m[2],layers_m[1])
->>>>>>> upstream/master
     plt.title(title_s,{'size': '20'})
     
     plt.axis('off')
