@@ -25,12 +25,19 @@ def create_3comms_bipartite(n,m,p,No_isolates=True):
         u+=1
         # print u,sel
     ndlss=bipartite.sets(G)
+    print 'n = %i' %len(ndlss[0])
+    print 'm = %i' %len(ndlss[1])
+    print 'Number of edges = %i' %len(G.edges())
     ndls=[list(i) for i in ndlss]
     slayer1=ndls[0]
     slayer2=ndls[1]
     layer1=[i for i,v in partition.items() if v==0]
     layer2=[i for i,v in partition.items() if v==1]
     layer3=[i for i,v in partition.items() if v==2]
+    print 'Community1 = ', layer1
+    print 'Community2 = ' ,layer2
+    print 'Community3 = ' ,layer3
+
     edgeList=[]
     for e in G.edges():
         if (e[0] in slayer1 and e[1] in slayer2) or (e[0] in slayer2 and e[1] in slayer1):
@@ -39,13 +46,118 @@ def create_3comms_bipartite(n,m,p,No_isolates=True):
 
 def plot_initial_graph(G):
     fig=plt.figure(num=1,figsize=(16,12))
+    
     sets=bipartite.sets(G)
     pos=nx.spring_layout(G)
-    nx.draw_networkx_nodes(G,pos=pos,nodelist=list(sets[0]),node_color='grey')
+    nx.draw_networkx_nodes(G,pos=pos,nodelist=list(sets[0]),node_color='grey',alpha=0.3)
     nx.draw_networkx_nodes(G,pos=pos,nodelist=list(sets[1]),node_color='gold')
-    nx.draw_networkx_edges(G,pos=pos)
+    nx.draw_networkx_labels(G,pos=pos)
+    nx.draw_networkx_edges(G,pos=pos,alpha=0.2)
     plt.axis("off")
-    plt.show()    
+    plt.show()
+    
+def plot_initial_bgraph(G):
+    fig=plt.figure(num=1,figsize=(16,12))
+    fig.add_subplot(121)
+    sets=bipartite.sets(G)
+    pos={}
+    for i,v in enumerate(sets[0]):
+        pos[v]= (0.,i)
+    for i,v in enumerate(sets[1]):
+        pos[v]= (1, i)
+
+
+    nx.draw_networkx_nodes(G,pos=pos,nodelist=list(sets[0]),node_color='grey',alpha=0.3)
+    nx.draw_networkx_nodes(G,pos=pos,nodelist=list(sets[1]),node_color='gold')
+    nx.draw_networkx_labels(G,pos=pos)
+    nx.draw_networkx_edges(G,pos=pos,alpha=0.2)
+    plt.axis("off")
+    # plt.show()  
+    return pos,fig   
+def create_2colors_per_comm(G,layer1,layer2,layer3,slayer1,slayer2,pos,fig):
+    sl11=random.sample(slayer1,len(slayer1)/2)
+    sl12=list(set(slayer1)-set(sl11))
+    # print G.nodes(data=True)
+    for i in sl11:
+        G.add_node(i,color='y')
+    for i in sl12:
+        G.add_node(i,color='b')
+    sl21=random.sample(slayer2,len(slayer2)/2)
+    sl22=list(set(slayer2)-set(sl21))
+    for i in sl21:
+        G.add_node(i,color='r')
+    for i in sl22:
+        G.add_node(i,color='c')
+    fig.add_subplot(122)
+    # for i in G.nodes(data=True):
+    #     print i
+    nodecolor=[i[1]['color'] for i in G.nodes(data=True)]
+    nx.draw_networkx_nodes(G,pos=pos,node_color=nodecolor,alpha=0.3)
+    # nx.draw_networkx_nodes(G,pos=pos,nodelist=list(sets[1]),node_color='gold')
+    nx.draw_networkx_labels(G,pos=pos)
+    nx.draw_networkx_edges(G,pos=pos,alpha=0.2)
+
+
+    plt.axis("off")
+
+def create_node_6attri_graph(G,layer1,layer2,layer3,slayer1,slayer2):
+    '''G is a 3-layer graph 
+    '''
+    fig=plt.figure(figsize=(17,12))
+    npart={}
+    for i in G.nodes(data=True):
+        if i[1]['color'] not in npart:
+            npart[i[1]['color']]=[i[0]]
+        else:
+            npart[i[1]['color']].append(i[0])
+
+    npartition=npart.values()#[slayer1,slayer2]
+    # print npartition
+
+    layers={'layer1':layer1,'layer2':layer2,'layer3':layer3}
+   
+    broken_partition={}
+    
+    for i,v in enumerate(npartition):
+        vs=set(v)
+        for ii,vv in layers.items():
+            papa=vs.intersection(set(vv))
+            if len(papa)==len(v):
+                broken_partition['a_%i_%s_s' %(i,ii)]=v
+            elif len(papa)>0:
+                broken_partition['b_%i_%s' %(i,ii)]=list(papa)
+                vs=vs-set(vv)
+            
+    broken_graph=nx.Graph()
+    rbroken_partition=dict()
+    
+    colors=[name for name,hex in matplotlib.colors.cnames.iteritems()]
+    colors=list(set(colors)-set(['red','blue','y','c']))
+   
+    cl=dict()
+    for i,v in broken_partition.items():
+        name=i.split('_')
+        for ii in v:
+            rbroken_partition[ii]=i
+        if name[-1]=='s':
+            cl[name[1]]=colors.pop()
+        elif name[0]=='b' and not cl.has_key(name[1]):
+            cl[name[1]]=colors.pop()
+    
+    for i,v in rbroken_partition.items():
+
+        name=v.split('_')
+        broken_graph.add_node(v,color=cl[name[1]])
+        edg=G[i]
+        for j in edg:
+            if j not in broken_partition[v]:
+                if not broken_graph.has_edge(v,rbroken_partition[j]):
+                    broken_graph.add_edge(v,rbroken_partition[j])
+    
+    return broken_graph,broken_partition,npartition,fig
+
+
+
 
 def create_node_3attri_graph(G,layer1,layer2,layer3,slayer1,slayer2):
     '''G is a 3-layer graph 
@@ -55,7 +167,7 @@ def create_node_3attri_graph(G,layer1,layer2,layer3,slayer1,slayer2):
     # layerattri2 = random.sample(set(G.nodes())-set(layerattri1),int(len(G.nodes())*attri2))
     # layerattri3 = list(set(G.nodes())-set(layerattri1)-set(layerattri2))
     # npartition=[layerattri1,layerattri2,layerattri3]
-    fig=plt.figure(figsize=(16,12))
+    fig=plt.figure(figsize=(17,12))
     npartition=[slayer1,slayer2]
 
     layers={'layer1':layer1,'layer2':layer2,'layer3':layer3}
@@ -218,7 +330,7 @@ def plot_graph_bip_3comms_2set(G,broken_graph,broken_partition,npartition,layer1
     # title_s='%i Three vertex attributes (%i 3-layered, %i 2-layered, %i 1-layered)' %(len(npartition),layers_m[3],layers_m[2],layers_m[1])
     plt.title(title_s,{'size': '12'})
     plt.axis('off')
-    # plt.show()
+    plt.show()
 
 def create_node_2attri_graph(G,layer1,layer2,layer3,slayer1,slayer2):
     '''G is a 3-layer graph 
@@ -389,14 +501,14 @@ def plot_graph_bip_2set_3comms(G,broken_graph,broken_partition,npartition,layer1
     # print G.nodes()
     # print npartition
     for i,v in enumerate(npartition):
-    	for nd in v:
-    		G.add_node(nd,part=i)
+        for nd in v:
+            G.add_node(nd,part=i)
 
 
  #    print 'bbbbbb'
-	# print G.nodes(data=True)
- #   	print 'aaaaa'
-   	rrd=nx.attribute_assortativity_coefficient(G,'part')
+    # print G.nodes(data=True)
+ #      print 'aaaaa'
+    rrd=nx.attribute_assortativity_coefficient(G,'part')
     nx.draw_networkx_edges(broken_graph,broken_pos,alpha=0.3) #0.15
     rr=nx.attribute_assortativity_coefficient(broken_graph,'color')
     title_s='Bipartite graph with bipartition as 2-layers (%i 2-layered, %i 1-layered)\n Community partition attribute assortativity coefficient wrt bipartition = %f\n(Community partition attribute assortativity coefficient = %f)' %(layers_m[2],layers_m[1],rr,rrd)  
@@ -418,3 +530,12 @@ def plot_graph_bip_2set_3comms(G,broken_graph,broken_partition,npartition,layer1
 # # print G,layer1,layer2
 # broken_graph,broken_partition,npartition=create_node_2attri_graph(G,layer1,layer2,layer3,slayer1,slayer2)
 # plot_graph_bip_2set_3comms(G,broken_graph,broken_partition,npartition,slayer1,slayer2,layer3,fig,d1=1.4,d2=5.,d3=0.8,withlabels=False,nodesize=100,layout=False)
+# n=10
+# m=10
+# p=0.23
+# G,layer1,layer2,layer3,slayer1,slayer2,edgeList,partition=create_3comms_bipartite(n,m,p)
+# pos,fig=plot_initial_bgraph(G)
+# create_2colors_per_comm(G,layer1,layer2,layer3,slayer1,slayer2,pos,fig)
+
+# broken_graph,broken_partition,npartition ,fig=create_node_6attri_graph(G,layer1,layer2,layer3,slayer1,slayer2)
+# plot_graph_bip_3comms_2set(G,broken_graph,broken_partition,npartition,layer1,layer2,layer3,fig,d1=1.4,d2=5.,d3=0.8,withlabels=False,nodesize=100,layout=False)

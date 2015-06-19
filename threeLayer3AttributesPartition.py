@@ -201,8 +201,15 @@ def plot_graph_stack(G,broken_graph,broken_partition,npartition,layer1,layer2,la
     lay3_edges=[ed for ed in G.edges() if ed[0] in layer3 and ed[1] in layer3]
     
     nx.draw_networkx_edges(broken_graph,broken_pos,alpha=0.3) #0.15
-    rr=nx.attribute_assortativity_coefficient(broken_graph,'color')
-    title_s='%i Three vertex attributes (%i 3-layered, %i 2-layered, %i 1-layered)\n Attribute assortativity coefficient wrt layer partition = %f' %(len(npartition),layers_m[3],layers_m[2],layers_m[1],rr)  
+    # orr=nx.attribute_assortativity_coefficient(broken_graph,'color')
+    for i,v in broken_partition.items():
+        for nd in v:
+            atrr=G.node[nd]
+            G.add_node(nd,attr_dict=atrr,asso=i)
+    # print G.nodes(data=True)
+    rr=nx.attribute_assortativity_coefficient(G,'asso')
+    # print 'Attribute assortativity coefficient wrt layer partition (old)= %f' %orr
+    title_s='%i Three vertex attributes (%i 3-layered, %i 2-layered, %i 1-layered)\n Discrete assortativity coefficient of the joint partition for 3 attributes and 3 layers = %f' %(len(npartition),layers_m[3],layers_m[2],layers_m[1],rr)  
     plt.title(title_s,{'size': '20'})
 
     plt.axis('off')
@@ -321,8 +328,15 @@ def plot_graph(G,broken_graph,broken_partition,npartition,layer1,layer2,layer3,d
     lay3_edges=[ed for ed in G.edges() if ed[0] in layer3 and ed[1] in layer3]
     
     nx.draw_networkx_edges(broken_graph,broken_pos,alpha=0.3) #0.15
-    rr=nx.attribute_assortativity_coefficient(broken_graph,'color')
-    title_s='%i Three vertex attributes (%i 3-layered, %i 2-layered, %i 1-layered)\n Attribute assortativity coefficient wrt layer partition = %f' %(len(npartition),layers_m[3],layers_m[2],layers_m[1],rr)  
+    # orr=nx.attribute_assortativity_coefficient(broken_graph,'color')
+    for i,v in broken_partition.items():
+        for nd in v:
+            atrr=G.node[nd]
+            G.add_node(nd,attr_dict=atrr,asso=i)
+    # print G.nodes(data=True)
+    rr=nx.attribute_assortativity_coefficient(G,'asso')
+    # print 'Attribute assortativity coefficient wrt layer partition (old)= %f' %orr
+    title_s='%i Three vertex attributes (%i 3-layered, %i 2-layered, %i 1-layered)\n Discrete assortativity coefficient of the joint partition for 3 attributes and 3 layers = %f' %(len(npartition),layers_m[3],layers_m[2],layers_m[1],rr)  
 
     # title_s='%i Three vertex attributes (%i 3-layered, %i 2-layered, %i 1-layered)' %(len(npartition),layers_m[3],layers_m[2],layers_m[1])
     plt.title(title_s,{'size': '20'})
