@@ -86,8 +86,16 @@ def create_node_3attri_graph(G,layer1,layer2,layer3,attri1,attri2,attri3):
             if j not in broken_partition[v]:
                 if not broken_graph.has_edge(v,rbroken_partition[j]):
                     broken_graph.add_edge(v,rbroken_partition[j])
+    for i in G.nodes():
+        if i in layerattri1:
+            G.add_node(i,attr_dict=G.node[i],threeattributes='1')
+        elif i in layerattri2:
+            G.add_node(i,attr_dict=G.node[i],threeattributes='2')
+        else:
+            G.add_node(i,attr_dict=G.node[i],threeattributes='3')
+
     
-    return broken_graph,broken_partition,npartition
+    return broken_graph,broken_partition,npartition,G
 
 
 def plot_graph_stack(G,broken_graph,broken_partition,npartition,layer1,layer2,layer3,d1=1.5,d2=5.,d3=0,d4=.8,nodesize=1000,withlabels=True,edgelist=[],layout=True,alpha=0.5):
@@ -202,14 +210,19 @@ def plot_graph_stack(G,broken_graph,broken_partition,npartition,layer1,layer2,la
     
     nx.draw_networkx_edges(broken_graph,broken_pos,alpha=0.3) #0.15
     # orr=nx.attribute_assortativity_coefficient(broken_graph,'color')
-    for i,v in broken_partition.items():
-        for nd in v:
-            atrr=G.node[nd]
-            G.add_node(nd,attr_dict=atrr,asso=i)
-    # print G.nodes(data=True)
+    rcom=nx.attribute_assortativity_coefficient(G,'threeattributes')
+    rlay=nx.attribute_assortativity_coefficient(G,'layers_3')
     rr=nx.attribute_assortativity_coefficient(G,'asso')
     # print 'Attribute assortativity coefficient wrt layer partition (old)= %f' %orr
-    title_s='%i Three vertex attributes (%i 3-layered, %i 2-layered, %i 1-layered)\n Discrete assortativity coefficient of the joint partition for 3 attributes and 3 layers = %f' %(len(npartition),layers_m[3],layers_m[2],layers_m[1],rr)  
+    # title_s='%i communities (%i 3-layered, %i 2-layered, %i 1-layered)\nAssortativity_coef(%i_communities) = %.2f\nAssortativity_coef(3_layers) = %.2f\n Joint_Assortativity_coef(%i_communities, 3_layers) = %f' %(len(npartition),layers_m[3],layers_m[2],layers_m[1],len(npartition),rcom,rlay,len(npartition),rr)  
+
+    # print 'Attribute assortativity coefficient wrt layer partition (old) = %f' %orr
+
+
+    # print 'Attribute assortativity coefficient wrt layer partition (old)= %f' %orr
+    title_s='%i Three vertex attributes (%i 3-layered, %i 2-layered, %i 1-layered)\nAssortativity_coef(%i_3Attributes) = %.2f\nAssortativity_coef(3_layers) = %.2f\n Joint_Assortativity_coef(%i_3Attributes, 3_layers) = %.2f ' %(len(npartition),layers_m[3],layers_m[2],layers_m[1],len(npartition),rcom,rlay,len(npartition),rr)
+
+    # title_s='%i Three vertex attributes (%i 3-layered, %i 2-layered, %i 1-layered)' %(len(npartition),layers_m[3],layers_m[2],layers_m[1])
     plt.title(title_s,{'size': '20'})
 
     plt.axis('off')
@@ -329,14 +342,24 @@ def plot_graph(G,broken_graph,broken_partition,npartition,layer1,layer2,layer3,d
     
     nx.draw_networkx_edges(broken_graph,broken_pos,alpha=0.3) #0.15
     # orr=nx.attribute_assortativity_coefficient(broken_graph,'color')
-    for i,v in broken_partition.items():
-        for nd in v:
-            atrr=G.node[nd]
-            G.add_node(nd,attr_dict=atrr,asso=i)
-    # print G.nodes(data=True)
+    # for i,v in broken_partition.items():
+    #     for nd in v:
+    #         atrr=G.node[nd]
+    #         G.add_node(nd,attr_dict=atrr,asso=i)
+
+    # # print G.nodes(data=True)
+    # rr=nx.attribute_assortativity_coefficient(G,'asso')
+    rcom=nx.attribute_assortativity_coefficient(G,'threeattributes')
+    rlay=nx.attribute_assortativity_coefficient(G,'layers_3')
     rr=nx.attribute_assortativity_coefficient(G,'asso')
     # print 'Attribute assortativity coefficient wrt layer partition (old)= %f' %orr
-    title_s='%i Three vertex attributes (%i 3-layered, %i 2-layered, %i 1-layered)\n Discrete assortativity coefficient of the joint partition for 3 attributes and 3 layers = %f' %(len(npartition),layers_m[3],layers_m[2],layers_m[1],rr)  
+    # title_s='%i communities (%i 3-layered, %i 2-layered, %i 1-layered)\nAssortativity_coef(%i_communities) = %.2f\nAssortativity_coef(3_layers) = %.2f\n Joint_Assortativity_coef(%i_communities, 3_layers) = %f' %(len(npartition),layers_m[3],layers_m[2],layers_m[1],len(npartition),rcom,rlay,len(npartition),rr)  
+
+    # print 'Attribute assortativity coefficient wrt layer partition (old) = %f' %orr
+
+
+    # print 'Attribute assortativity coefficient wrt layer partition (old)= %f' %orr
+    title_s='%i Three vertex attributes (%i 3-layered, %i 2-layered, %i 1-layered)\nAssortativity_coef(%i_3Attributes) = %.2f\nAssortativity_coef(3_layers) = %.2f\n Joint_Assortativity_coef(%i_3Attributes, 3_layers) = %.2f ' %(len(npartition),layers_m[3],layers_m[2],layers_m[1],len(npartition),rcom,rlay,len(npartition),rr)
 
     # title_s='%i Three vertex attributes (%i 3-layered, %i 2-layered, %i 1-layered)' %(len(npartition),layers_m[3],layers_m[2],layers_m[1])
     plt.title(title_s,{'size': '20'})
