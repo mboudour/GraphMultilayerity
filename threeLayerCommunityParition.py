@@ -15,6 +15,7 @@ from matplotlib.patches import Ellipse, Polygon
 import random
 from collections import Counter
 
+
 def analyticThreeLayerGraph(n,p,r1,r2,r3,G_isolates=True):
 
     G=nx.erdos_renyi_graph(n,p)
@@ -76,11 +77,31 @@ def create_node_comm_graph(G,layer1,layer2,layer3):
         name=v.split('_')
         broken_graph.add_node(v,color=cl[name[1]])
         edg=G[i]
+        # print edg
         for j in edg:
+            # print j
             if j not in broken_partition[v]:
+                # print j
                 if not broken_graph.has_edge(v,rbroken_partition[j]):
                     broken_graph.add_edge(v,rbroken_partition[j])
-    return broken_graph,broken_partition,npartition
+    # npartition = list(nx.connected_components(G))
+    for i in G.nodes():
+        # attr=G.node[i]
+        # print attr
+        G.add_node(i,attr_dict=G.node[i],best_partition=partition[i])
+        if i in layer1:
+            G.add_node(i,attr_dict=G.node[i],layers_3='1')
+        elif i in layer2:
+            G.add_node(i,attr_dict=G.node[i],layers_3='2')
+        else:
+            G.add_node(i,attr_dict=G.node[i],layers_3='3')
+
+
+    # rr=nx.attribute_assortativity_coefficient(G,'layers_3')
+    # s_title='Assortativity_coef(3_layers)= %.2f' %rr
+    # plt.title(s_title,{'size': '20'})
+
+    return broken_graph,broken_partition,npartition,G
 
 
 def plot_graph_stack(G,broken_graph,broken_partition,npartition,layer1,layer2,layer3,d1=1.5,d2=5.,d3=0,d4=.8,nodesize=1000,withlabels=True,edgelist=[],layout=True,alpha=0.5):
@@ -200,9 +221,13 @@ def plot_graph_stack(G,broken_graph,broken_partition,npartition,layer1,layer2,la
             atrr=G.node[nd]
             G.add_node(nd,attr_dict=atrr,asso=i)
     # print G.nodes(data=True)
+    rcom=nx.attribute_assortativity_coefficient(G,'best_partition')
+    rlay=nx.attribute_assortativity_coefficient(G,'layers_3')
     rr=nx.attribute_assortativity_coefficient(G,'asso')
     # print 'Attribute assortativity coefficient wrt layer partition (old)= %f' %orr
-    title_s='%i communities (%i 3-layered, %i 2-layered, %i 1-layered)\nDiscrete assortativity coefficient of the joint partition for communities and 3 layers = %f' %(len(npartition),layers_m[3],layers_m[2],layers_m[1],rr)  
+    title_s='%i communities (%i 3-layered, %i 2-layered, %i 1-layered)\nAssortativity_coef(%i_communities) = %.2f\nAssortativity_coef(3_layers) = %.2f\n Joint_Assortativity_coef(%i_communities, 3_layers) = %.2f' %(len(npartition),layers_m[3],layers_m[2],layers_m[1],len(npartition),rcom,rlay,len(npartition),rr)  
+
+    # title_s='%i communities (%i 3-layered, %i 2-layered, %i 1-layered)' %(len(npartition),layers_m[3],layers_m[2],layers_m[1])
     plt.title(title_s,{'size': '20'})
     plt.axis('off')
     plt.show()
@@ -336,14 +361,20 @@ def plot_graph(G,broken_graph,broken_partition,npartition,layer1,layer2,layer3,d
     
     nx.draw_networkx_edges(broken_graph,broken_pos,alpha=0.3) #0.15
     # orr=nx.attribute_assortativity_coefficient(broken_graph,'color')
+    #     rr=nx.attribute_assortativity_coefficient(G,'layers_3')
+    # s_title='Assortativity_coef(3_layers)= %.2f' %rr
+    # plt.title(s_title,{'size': '20'})
+
     for i,v in broken_partition.items():
         for nd in v:
             atrr=G.node[nd]
             G.add_node(nd,attr_dict=atrr,asso=i)
     # print G.nodes(data=True)
+    rcom=nx.attribute_assortativity_coefficient(G,'best_partition')
+    rlay=nx.attribute_assortativity_coefficient(G,'layers_3')
     rr=nx.attribute_assortativity_coefficient(G,'asso')
     # print 'Attribute assortativity coefficient wrt layer partition (old)= %f' %orr
-    title_s='%i communities (%i 3-layered, %i 2-layered, %i 1-layered)\n Discrete assortativity coefficient of the joint partition for communities and 3 layers = %f' %(len(npartition),layers_m[3],layers_m[2],layers_m[1],rr)  
+    title_s='%i communities (%i 3-layered, %i 2-layered, %i 1-layered)\nAssortativity_coef(%i_communities) = %.2f\nAssortativity_coef(3_layers) = %.2f\n Joint_Assortativity_coef(%i_communities, 3_layers) = %.2f' %(len(npartition),layers_m[3],layers_m[2],layers_m[1],len(npartition),rcom,rlay,len(npartition),rr)  
 
     # title_s='%i communities (%i 3-layered, %i 2-layered, %i 1-layered)' %(len(npartition),layers_m[3],layers_m[2],layers_m[1])
     plt.title(title_s,{'size': '20'})
