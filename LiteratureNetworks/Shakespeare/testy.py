@@ -1,6 +1,26 @@
-import nltk
+# import nltk
 import re
 import networkx as nx
+def create_diction_of_actors(path):
+    pers_l={}
+    fifi=open(path)
+    u=0
+    while True:
+        u+=1
+        i=fifi.readline()
+        if i=='':
+            break
+        else:
+            i=i.strip()
+        # ii=i.split()
+        ii=re.split(r'[A-Z]+', i)
+        print ii,len(ii)
+        if len(ii)>0 and len(ii) <= 2 and i[-1]=='.':
+            if i[:-1] not in pers_l:
+                pers_l[i[:-1]]=[u]
+            else:
+                pers_l[i[:-1]].append(u)
+    return pers_l
 
 def create_dict_of_acts(path):
     fifi = open(path)
