@@ -272,14 +272,14 @@ def draw_comms(G,dom,idom,doml,nodoml ,par,cpar,d,dd,c,cc,alpha,ealpha,nodper,ss
         xp=[xx[0] for x,xx in v.items()]
         yp=[yy[1] for y,yy in v.items()]
 
-        # ells.append(Ellipse(xy=(((-1)**i)*dd+max(xp)/2.,d*i+max(yp)/2.),width=cc*max(xp)/dd,height=c*max(yp)/d))
+        ells.append(Ellipse(xy=(((-1)**i)*dd+max(xp)/2.,d*i+max(yp)/2.),width=cc*max(xp)/dd,height=c*max(yp)/d))
         colll=random.choice(colors)
         ellc.append(colll)
         colors.remove(colll)
         col_dic[i]=colll
-        # for j in v:
-        #     npos=v[j]
-        #     pos[j]=[((-1)**par[j])*dd+npos[0],npos[1]+d*par[j]]
+        for j in v:
+            npos=v[j]
+            pos[j]=[((-1)**par[j])*dd+npos[0],npos[1]+d*par[j]]
 
     col=[]
     if dom==G.nodes():
@@ -359,13 +359,13 @@ def draw_comms(G,dom,idom,doml,nodoml ,par,cpar,d,dd,c,cc,alpha,ealpha,nodper,ss
 
     ncomm=max(cpar.values())+1
     # sstt="The %s Communities of Hamlet Act I Network" %ncomm
-    plt.figure(figsize=(12,12))
+    # plt.figure(figsize=(12,12))
     
-    plt.title(sstt,fontsize=20)
+    # plt.title(sstt,fontsize=20)
 	# kk=plt.axis('off')
 
-    # plt.subplot(1,1,1).set_title(sstt)
-    # ax = fig.add_subplot(1,1,1)
+    plt.subplot(1,1,1).set_title(sstt)
+    ax = fig.add_subplot(1,1,1)
     
     # print nodper,G.nodes()
     labelsn={v:i for v,i in nodper.items() if v in G.nodes()}
@@ -389,9 +389,93 @@ def draw_comms(G,dom,idom,doml,nodoml ,par,cpar,d,dd,c,cc,alpha,ealpha,nodper,ss
     plt.axis('off')
     plt.show()
 
+def draw_comms_random(G,dom,idom,doml,nodoml ,par,cpar,d,dd,c,cc,alpha,ealpha,sstt):
+    import community 
+    from matplotlib.patches import Ellipse
+    
+    import matplotlib
+    
+    # par= community.best_partition(G)
+    invpar={}
+
+    for i,v in par.items():
+        if v not in invpar:
+            invpar[v]=[i]
+        else:
+            invpar[v].append(i)
+    ninvpar={}
+    for i,v in invpar.items():
+        if i not in ninvpar:
+            ninvpar[i]=nx.spring_layout(G.subgraph(v))
+    pos=nx.spring_layout(G)
+
+    # pos=pos_dict[0]
+
+    # print ninvpar
+    
+        
+    ells=[]
+    ellc=[]
+    colors=[name for name,hex in matplotlib.colors.cnames.iteritems()]
+    colors=list(set(colors)-set(['red','blue','green','m','c']))
+    col_dic={}
+    for i,v in ninvpar.items():
+        xp=[xx[0] for x,xx in v.items()]
+        yp=[yy[1] for y,yy in v.items()]
+
+        ells.append(Ellipse(xy=(((-1)**i)*dd+max(xp)/2.,d*i+max(yp)/2.),width=cc*max(xp)/dd,height=c*max(yp)/d))
+        colll=random.choice(colors)
+        ellc.append(colll)
+        colors.remove(colll)
+        col_dic[i]=colll
+        for j in v:
+            npos=v[j]
+            pos[j]=[((-1)**par[j])*dd+npos[0],npos[1]+d*par[j]]
+
+    col=[]
+    if dom==G.nodes():
+        for nd in G.nodes():
+            col.append(col_dic[par[nd]])
+    else:
+        for nd in G.nodes():
+            if nd in dom:
+                col.append('r')
+            elif nd in doml:
+                col.append('m')
+            elif nd in nodoml:
+                col.append('c')
+            else:
+                col.append('b')
 
 
+    fig = plt.figure(figsize=(12,12))
 
+    ncomm=max(cpar.values())+1
+
+    plt.subplot(1,1,1).set_title(sstt)
+    ax = fig.add_subplot(1,1,1)
+    
+    # print nodper,G.nodes()
+    # labelsn={v:i for v,i in nodper.items() if v in G.nodes()}
+    # print labelsn
+    # print pos
+    # edgewidth=[]
+    # for (u,v,d) in G.edges(data=True):
+    #     edgewidth.append(d['weight'])
+    
+    # ax.set_title(sstt)
+    
+    for i,e in enumerate(ells):
+        ax.add_artist(e)
+        e.set_clip_box(ax.bbox)
+        e.set_alpha(alpha)
+        e.set_facecolor(ellc[i])
+    nx.draw_networkx_nodes(G,pos=pos, node_color=col)  
+    nx.draw_networkx_labels(G,pos,font_size=10)#,font_color='w')
+    nx.draw_networkx_edges(G,pos,edge_color='k', alpha=ealpha)
+    plt.axis('equal')
+    plt.axis('off')
+    plt.show()
 
 
 def draw_domcomms_sr(G,layer1,layer2,dom,idom,doml,nodoml ,par,cpar,d,dd,c,cc,alpha,ealpha,labels=False,nodesize=10):
