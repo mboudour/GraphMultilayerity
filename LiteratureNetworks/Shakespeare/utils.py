@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse, Polygon
 import matplotlib
 import random
+import math
+import numpy
 
 # import community as community
 
@@ -50,6 +52,11 @@ def draw_centralities(G,centr,pos,withLabels=True,labfs=10,valpha=0.4,ealpha=0.4
         cent=nx.eigenvector_centrality(G,max_iter=1000)
         sstt='Eigenvector Centralities'
         ssttt='eigenvector centrality'
+    elif centr=='katz_centrality':
+        phi = (1+math.sqrt(5))/2.0 # largest eigenvalue of adj matrix
+        cent=nx.katz_centrality_numpy(G,1/phi-0.01)
+        sstt='Katz Centralities'
+        ssttt='Katz centrality'
     elif centr=='page_rank':
         cent=nx.pagerank(G)
         sstt='PageRank'
@@ -76,7 +83,7 @@ def draw_centralities(G,centr,pos,withLabels=True,labfs=10,valpha=0.4,ealpha=0.4
 
 def draw_centralities_subplots(G,pos,withLabels=True,labfs=10,valpha=0.4,ealpha=0.4):
     centList=['degree_centrality','closeness_centrality','betweenness_centrality',
-    'eigenvector_centrality','page_rank']
+    'eigenvector_centrality','katz_centrality','page_rank']
     cenLen=len(centList)
     plt.figure(figsize=(12,12))
     for uu,centr in enumerate(centList):
@@ -96,6 +103,11 @@ def draw_centralities_subplots(G,pos,withLabels=True,labfs=10,valpha=0.4,ealpha=
             cent=nx.eigenvector_centrality(G,max_iter=1000)
             sstt='Eigenvector Centralities'
             ssttt='eigenvector centrality'
+        elif centr=='katz_centrality':
+            phi = (1+math.sqrt(5))/2.0 # largest eigenvalue of adj matrix
+            cent=nx.katz_centrality_numpy(G,1/phi-0.01)
+            sstt='Katz Centralities'
+            ssttt='Katz centrality'
         elif centr=='page_rank':
             cent=nx.pagerank(G)
             sstt='PageRank'
