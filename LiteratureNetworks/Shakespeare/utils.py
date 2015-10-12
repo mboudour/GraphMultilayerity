@@ -20,20 +20,63 @@ def create_conn_random_graph(nodes,p):
     return G, sstt
 
 
-def draw_network(G,sstt,withLabels=True,labfs=10,valpha=0.4,ealpha=0.4):
+def draw_network(G,sstt,pos={},with_edgewidth=False,withLabels=True,pernode_dict={},labfs=10,valpha=0.4,ealpha=0.4):
 
-    pos=nx.spring_layout(G,scale=50)
+
+# GI = graph_dic[ract_dic[cnum[3]]]
+# print "The number of actors in Macbeth's Act IV is", len(GI.nodes())
+# print "The number of conversational relationships in Macbeth's Act IV is", len(GI.edges())
+
+    G.remove_nodes_from(nx.isolates(G))
+    # if with_weights:
+    #     weights={(i[0],i[1]):i[2]['weight'] for i in G.edges(data=True) }#if all((i[0],i[1])) in G.nodes() }
     plt.figure(figsize=(12,12))
-    nx.draw_networkx_nodes(G,pos=pos,with_labels=withLabels,alpha=valpha)
+    # try:
+    #     f=open('positions_of_Mc_Shake.dmp')
+    #     pos_dict=pickle.load(f)
+    #     pos =pos_dict[3]
+    # except:
+        
+    #     pos=nx.spring_layout(G,scale=50)
+    #     pos_dict[3]=pos
+    if len(pos)==0:
+        pos=nx.spring_layout(G,scale=50)
+
+
+# pos=nx.spring_layout(G,scale=50)
+# pos_dict[3]=pos
+    # if:
+    #     labels={i:v for v,i in pernode_dict.items() if i in G.nodes()}
+    # else:
+    #     labels={i:v for v,i in pernode_dict.items() if i in G.nodes()}
+    if with_edgewidth:
+        edgewidth=[]
+        for (u,v,d) in G.edges(data=True):
+            edgewidth.append(d['weight'])
+    else:
+        edgewidth=[1 for i in G.edges()]
+    nx.draw_networkx_nodes(G,pos=pos,with_labels=False,alpha=0.4)
     if withLabels:
-        labe=nx.draw_networkx_labels(G,pos=pos,font_size=labfs)
-    nx.draw_networkx_edges(G,pos=pos,edge_color='b',alpha=ealpha)
+        if len(pernode_dict)>0:
+            labels={i:v for v,i in pernode_dict.items() if i in G.nodes()}
+            labe=nx.draw_networkx_labels(G,pos=pos,labels=labels,font_size=20)
+        else:
+            labe=nx.draw_networkx_labels(G,pos=pos,font_size=labfs)
+    nx.draw_networkx_edges(G,pos=pos,edge_color='b',width=edgewidth, alpha=0.5)#,edge_labels=weights,label_pos=0.2)
+
+
+    # pos=nx.spring_layout(G,scale=50)
+    # plt.figure(figsize=(12,12))
+    # nx.draw_networkx_nodes(G,pos=pos,with_labels=withLabels,alpha=valpha)
+    # if withLabels:
+    #     labe=nx.draw_networkx_labels(G,pos=pos,font_size=labfs)
+    # # nx.draw_networkx_edges(G,pos=pos,edge_color='b',alpha=ealpha)
     plt.title(sstt,fontsize=20)
     kk=plt.axis('off')
     return pos
 
 
-def draw_centralities(G,centr,pos,withLabels=True,labfs=10,valpha=0.4,ealpha=0.4):
+def draw_centralities(G,centr,pos,with_edgewidth=False,withLabels=True,pernode_dict={},title_st='', labfs=10,valpha=0.4,ealpha=0.4):
 
     plt.figure(figsize=(12,12))
     if centr=='degree_centrality':
@@ -72,14 +115,25 @@ def draw_centralities(G,centr,pos,withLabels=True,labfs=10,valpha=0.4,ealpha=0.4
             print 'Node %s has %s = %.4f' %(v,ssttt,k)
 
     if withLabels:
-        labe=nx.draw_networkx_labels(G,pos=pos,font_size=labfs)
+        if len(pernode_dict)>1:
+            labels={i:v for v,i in pernode_dict.items() if i in G.nodes()}
+            labe=nx.draw_networkx_labels(G,pos=pos,labels=labels,font_size=20)
+        else:
+            labe=nx.draw_networkx_labels(G,pos=pos,font_size=labfs)
     nx.draw_networkx_nodes(G,pos=pos,nodelist=cent.keys(), #with_labels=withLabels,
                            node_size = [d*4000 for d in cent.values()],node_color=cent.values(),
                            cmap=plt.cm.Reds,alpha=valpha)
-    
-    nx.draw_networkx_edges(G,pos=pos,edge_color='b', alpha=ealpha)
-    plt.title(sstt,fontsize=20)
+    if with_edgewidth:
+        edgewidth=[]
+        for (u,v,d) in G.edges(data=True):
+            edgewidth.append(d['weight'])
+    else:
+        edgewidth=[1 for i in G.edges()]
+    nx.draw_networkx_edges(G,pos=pos,edge_color='b',width=edgewidth, alpha=ealpha)
+    plt.title(title_st+' '+ sstt,fontsize=20)
     kk=plt.axis('off')
+
+
 
 def draw_centralities_subplots(G,pos,withLabels=True,labfs=10,valpha=0.4,ealpha=0.4):
     centList=['degree_centrality','closeness_centrality','betweenness_centrality',
