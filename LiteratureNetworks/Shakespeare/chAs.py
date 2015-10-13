@@ -389,7 +389,7 @@ def draw_comms(G,dom,idom,doml,nodoml ,par,cpar,d,dd,c,cc,alpha,ealpha,nodper,ss
     plt.axis('off')
     plt.show()
 
-def draw_comms_random(G,dom,idom,doml,nodoml ,par,cpar,d,dd,c,cc,alpha,ealpha,sstt):
+def draw_comms_random(G,dom,idom,doml,nodoml ,par,cpar,d,dd,c,cc,alpha,ealpha,sstt,titlefont=20):
     import community 
     from matplotlib.patches import Ellipse
     
@@ -452,7 +452,7 @@ def draw_comms_random(G,dom,idom,doml,nodoml ,par,cpar,d,dd,c,cc,alpha,ealpha,ss
 
     ncomm=max(cpar.values())+1
 
-    plt.subplot(1,1,1).set_title(sstt)
+    plt.subplot(1,1,1).set_title(sstt,fontsize=titlefont)
     ax = fig.add_subplot(1,1,1)
     
     # print nodper,G.nodes()
